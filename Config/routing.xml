@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<routes xmlns="http://symfony.com/schema/routing" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
+    <route id="acl.update" path="/admin/module/CustomerGroupAcl/update" methods="post">
+        <default key="_controller">CustomerGroupAcl\Controller\Admin\CustomerGroupAclAdminController::aclUpdateAction</default>
+    </route>
+
+    <route id="acl.activation" path="/admin/module/CustomerGroupAcl/toggle-activation/{acl_id}/{customer_group_id}/{type}">
+        <default key="_controller">CustomerGroupAcl\Controller\Admin\CustomerGroupAclAdminController::toggleActivationAction</default>
+        <requirement key="acl_id">\d+</requirement>
+        <requirement key="customer_group_id">\d+</requirement>
+        <requirement key="type">\d+</requirement>
+    </route>
+</routes>

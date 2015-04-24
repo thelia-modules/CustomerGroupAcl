@@ -1,0 +1,13 @@
+{
+    "name": "thelia/customer-group-acl-module",
+    "license": "LGPL-3.0+",
+    "type": "thelia-module",
+    "extra": {
+        "installer-name": "CustomerGroupAcl"
+    },
+    "minimum-stability": "dev",
+    "require": {
+        "thelia/installer": "~1.0",
+        "thelia/customer-group-module": "~0.1"
+    }
+}

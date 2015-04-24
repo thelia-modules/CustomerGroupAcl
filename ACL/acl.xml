@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<config xmlns="http://thelia.net/acl"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://thelia.net/acl http://thelia.net/acl/acl.xsd">
+
+    <acls>
+        <!--
+        <acl code="MyAclCode">
+            <descriptive locale="en_US">
+                <title>My title</title>
+            </descriptive>
+            <descriptive locale="fr_FR">
+                <title>Mon titre</title>
+            </descriptive>
+        </acl>
+        -->
+    </acls>
+
+    <customergroups>
+        <!--
+        <customergroup group="MyGroup">
+
+            <customergroupacl aclcode="MyAclCode">
+                <access right="VIEW"/>
+                <access right="CREATE"/>
+            </customergroupacl>
+            <customergroupacl aclcode="MySecondAclCode">
+                <access right="VIEW"/>
+            </customergroupacl>
+
+        </customergroup>
+
+        <customergroup group="MySecondGroup">
+            <customergroupacl aclcode="MyAclCode">
+                <access right="ALL"/>
+            </customergroupacl>
+            <customergroupacl aclcode="MySecondAclCode">
+                <access right="VIEW"/>
+                <access right="CREATE"/>
+                <access right="UPDATE"/>
+                <access right="DELETE"/>
+            </customergroupacl>
+        </customergroup>
+        -->
+
+    </customergroups>
+</config>
+

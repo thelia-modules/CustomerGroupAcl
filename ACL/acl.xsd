@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xsd:schema xmlns="http://thelia.net/acl"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://thelia.net/acl"
+            elementFormDefault="qualified">
+    <xsd:element name="config">
+        <xsd:complexType>
+            <xsd:sequence>
+
+                <xsd:element name="acls">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="acl" maxOccurs="unbounded" minOccurs="0">
+                                <xsd:complexType>
+                                    <xsd:choice>
+
+                                        <xsd:element name="descriptive" maxOccurs="unbounded" minOccurs="1">
+                                            <xsd:complexType>
+                                                <xsd:sequence>
+                                                    <xsd:element type="xsd:string" name="title" maxOccurs="1" minOccurs="1"/>
+                                                    <xsd:element type="xsd:string" name="description" maxOccurs="1" minOccurs="0"/>
+                                                </xsd:sequence>
+                                                <xsd:attribute type="xsd:string" name="locale" use="required"/>
+                                            </xsd:complexType>
+                                        </xsd:element>
+
+                                    </xsd:choice>
+                                    <xsd:attribute type="xsd:string" name="code" use="required"/>
+                                </xsd:complexType>
+                            </xsd:element>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+
+                <xsd:element name="customergroups">
+                    <xsd:complexType>
+                        <xsd:sequence>
+
+                            <xsd:element name="customergroup" maxOccurs="unbounded" minOccurs="0">
+                                <xsd:complexType>
+                                    <xsd:choice minOccurs="1" maxOccurs="unbounded">
+
+                                        <xsd:element name="customergroupacl" maxOccurs="unbounded" minOccurs="1">
+                                            <xsd:complexType>
+                                                <xsd:sequence>
+                                                    <xsd:element name="access" maxOccurs="unbounded" minOccurs="1">
+                                                        <xsd:complexType>
+                                                            <xsd:attribute type="xsd:string" name="right" use="required"/>
+                                                        </xsd:complexType>
+                                                    </xsd:element>
+                                                </xsd:sequence>
+                                                <xsd:attribute type="xsd:string" name="aclcode" use="required"/>
+                                            </xsd:complexType>
+                                        </xsd:element>
+
+                                        <xsd:element name="extends-customergroupacl" maxOccurs="unbounded" minOccurs="1">
+                                            <xsd:complexType>
+                                                <xsd:attribute type="xsd:string" name="group" use="required"/>
+                                                <xsd:attribute type="xsd:string" name="aclcode" use="optional"/>
+                                            </xsd:complexType>
+                                        </xsd:element>
+
+                                    </xsd:choice>
+                                    <xsd:attribute type="xsd:string" name="group" use="required"/>
+
+                                </xsd:complexType>
+
+                            </xsd:element>
+
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>

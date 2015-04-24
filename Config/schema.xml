@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database defaultIdMethod="native" name="thelia">
+
+    <table name="acl" namespace="CustomerGroupAcl\Model">
+        <column name="module_id" required="true" type="INTEGER" />
+        <column name="code" required="true" size="55" type="VARCHAR" />
+        <column name="title" required="true" size="255" type="VARCHAR" />
+        <column name="description" size="255" type="VARCHAR" />
+
+        <foreign-key foreignTable="module" onDelete="CASCADE">
+            <reference local="module_id" foreign="id" />
+        </foreign-key>
+
+        <unique name="code_UNIQUE">
+            <unique-column name="code" />
+        </unique>
+
+        <behavior name="auto_add_pk" />
+        <behavior name="timestampable" />
+        <behavior name="i18n">
+            <parameter name="i18n_columns" value="title, description" />
+        </behavior>
+    </table>
+
+    <table name="customer_group_acl" namespace="CustomerGroupAcl\Model">
+        <column name="acl_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="customer_group_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="type" primaryKey="true" required="true" type="INTEGER" />
+        <column name="activate" type="TINYINT" />
+
+        <foreign-key foreignTable="acl" onDelete="CASCADE">
+            <reference local="acl_id" foreign="id" />
+        </foreign-key>
+        <foreign-key foreignTable="customer_group" onDelete="CASCADE">
+            <reference local="customer_group_id" foreign="id" />
+        </foreign-key>
+
+        <index name="idx_acl_activate">
+            <index-column name="activate" />
+        </index>
+
+        <behavior name="timestampable" />
+    </table>
+
+    <external-schema filename="local/modules/CustomerGroup/Config/schema.xml" referenceOnly="true" />
+</database>

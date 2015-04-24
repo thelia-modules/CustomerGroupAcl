@@ -1,0 +1,38 @@
+{javascripts file='assets/js/bootstrap-switch/bootstrap-switch.js'}
+<script src="{$asset_url}"></script>
+{/javascripts}
+<script>
+    $(function() {
+
+        var url_management = "{url path="/admin/module/CustomerGroupAcl/toggle-activation/"}";
+        $(".acl-activation")
+                .bootstrapSwitch()
+                .on("switch-change", function(e, data){
+
+            var checkbox = $(this);
+            var acl_id = checkbox.data('id');
+            var customer_group_id = checkbox.data('customer_group_id');
+            var type = checkbox.data('type');
+            var is_checked = data.value;
+
+            $('body').append('<div class="modal-backdrop fade in" id="loading-event"><div class="loading"></div></div>');
+            $.ajax({
+                url: url_management+$(this).data('id')+'/'+$(this).data('customer_group_id')+'/'+$(this).data('type')
+            }).done(function(){
+                        $("#loading-event").remove();
+                    })
+                    .success(function() {
+                        if (is_checked)
+                            $('#config-btn-' + acl_id).removeClass('disabled');
+                        else
+                            $('#config-btn-' + acl_id).addClass('disabled');
+
+                    })
+                    .fail(function(jqXHR, textStatus, errorThrown){
+                        checkbox.bootstrapSwitch('toggleState', true);
+                        $("#loading-event").remove();
+                    });
+
+        });
+    });
+</script>

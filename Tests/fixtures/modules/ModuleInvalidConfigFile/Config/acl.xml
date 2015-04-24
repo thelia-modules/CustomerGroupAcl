@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<config xmlns="http://thelia.net/acl"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://thelia.net/acl http://thelia.net/acl/acl.xsd">
+
+    <acls>
+        <acl code="-customer-group-acl-unit-test-acl-a-">
+            <descriptive locale="en_US">
+                <title>Test ACL A</title>
+                <description>Test ACL A description.</description>
+            </descriptive>
+            <descriptive locale="fr_FR">
+                <title>ACL de test A</title>
+                <description>Description de l'ACL de test A.</description>
+            </descriptive>
+        </acl>
+        <acl code="-customer-group-acl-unit-test-acl-b-">
+            <descriptive locale="en_US">
+                <title>Test ACL B</title>
+                <description>Test ACL B description.</description>
+            </descriptive>
+            <descriptive locale="fr_FR">
+                <title>ACL de test B</title>
+                <description>Description de l'ACL de test B.</description>
+            </descriptive>
+        </acl>
+    </acls>
+
+    <customergroups>
+        <customergroup group="-customer-group-unit-test-group-a-">
+            <customergroupacl aclcode="-customer-group-acl-unit-test-acl-a-">
+                <access right="VIEW"/>
+                <access right="CREATE"/>
+            </customergroupacl>
+            <customergroupacl aclcode="-customer-group-acl-unit-test-acl-b-">
+
+        <customergroup group="-customer-group-unit-test-group-b-">
+            <customergroupacl aclcode="-customer-group-acl-unit-test-acl-b-">
+                <access right="VIEW"/>
+                <access right="CREATE"/>
+                <access right="UPDATE"/>
+                <access right="DELETE"/>
+            </customergroupacl>
+        </customergroup>
+    </customergroups>
+</config>
