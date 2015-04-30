@@ -169,7 +169,8 @@ class AclXmlFileloader
         $extendCustomerGroupCode = $extendCustomerGroupAcl->getAttributeAsPhp('group');
 
         //If an aclcode is specified in extends
-        if (null !== $aclcode = $extendCustomerGroupAcl->getAttributeAsPhp('aclcode')) {
+        $aclcode = $extendCustomerGroupAcl->getAttributeAsPhp('aclcode');
+        if ($aclcode !== null && $aclcode !== '') {
             $extendCustomerGroupAcls =$xml->xpath(
                 '//config:customergroups'
                 .'/config:customergroup[@group="'.$extendCustomerGroupCode.'"]'
