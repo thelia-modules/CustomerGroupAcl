@@ -136,8 +136,8 @@ class AclXmlFileloaderTest extends AbstractCustomerGroupAclTest
         $this->assertEquals("Description de l'ACL de test B.", $aclB->getDescription());
 
         // ensure that the group ACL were created
-        $this->assertEquals($initialCustomerGroupAcls->count() + 7, $finalCustomerGroupAcls->count());
-
+        $this->assertEquals($initialCustomerGroupAcls->count() + 11, $finalCustomerGroupAcls->count());
+        // group a
         $this->assertCustomerGroupAclExistsAndUnique(
             $aclA,
             self::$testCustomerGroups[0],
@@ -154,7 +154,7 @@ class AclXmlFileloaderTest extends AbstractCustomerGroupAclTest
             self::$testCustomerGroups[0],
             CustomerGroupAclAccessManager::getAccessPowsValue("VIEW")
         );
-
+        // group b
         $this->assertCustomerGroupAclExistsAndUnique(
             $aclB,
             self::$testCustomerGroups[1],
@@ -174,6 +174,29 @@ class AclXmlFileloaderTest extends AbstractCustomerGroupAclTest
             $aclB,
             self::$testCustomerGroups[1],
             CustomerGroupAclAccessManager::getAccessPowsValue("DELETE")
+        );
+        // group c, uses group a accesses
+        $this->assertCustomerGroupAclExistsAndUnique(
+            $aclA,
+            self::$testCustomerGroups[2],
+            CustomerGroupAclAccessManager::getAccessPowsValue("VIEW")
+        );
+        $this->assertCustomerGroupAclExistsAndUnique(
+            $aclA,
+            self::$testCustomerGroups[2],
+            CustomerGroupAclAccessManager::getAccessPowsValue("CREATE")
+        );
+
+        $this->assertCustomerGroupAclExistsAndUnique(
+            $aclB,
+            self::$testCustomerGroups[2],
+            CustomerGroupAclAccessManager::getAccessPowsValue("VIEW")
+        );
+        // group d, uses group a accesses for acl b
+        $this->assertCustomerGroupAclExistsAndUnique(
+            $aclB,
+            self::$testCustomerGroups[3],
+            CustomerGroupAclAccessManager::getAccessPowsValue("VIEW")
         );
     }
 }

@@ -46,5 +46,18 @@
                 <access right="DELETE"/>
             </customergroupacl>
         </customergroup>
+
+        <customergroup group="-customer-group-unit-test-group-c-">
+        <extends-customergroupacl
+                group="-customer-group-unit-test-group-a-"
+                />
+        </customergroup>
+
+        <customergroup group="-customer-group-unit-test-group-d-">
+            <extends-customergroupacl
+                    group="-customer-group-unit-test-group-a-"
+                    aclcode="-customer-group-acl-unit-test-acl-b-"
+                    />
+        </customergroup>
     </customergroups>
 </config>
