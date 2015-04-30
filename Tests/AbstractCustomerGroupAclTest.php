@@ -21,6 +21,7 @@ abstract class AbstractCustomerGroupAclTest extends AbstractCustomerGroupTest
         "-customer-group-unit-test-group-a-",
         "-customer-group-unit-test-group-b-",
         "-customer-group-unit-test-group-c-",
+        "-customer-group-unit-test-group-d-",
     ];
 
     /**
