@@ -27,7 +27,7 @@ The ACLs will be created when the module is activated.
 
 Since ACLs are applied to customer group, you must have already have created some in order to use them
 (see the CustomerGroup module documentation).
-In this exemple, we will assume that the `client` and `vip` groups exists`.
+In this exemple, we will assume that the `client`, `vip`, `also-vip-1` and `also-vip-2` groups exists.
 
 ```XML
 <?xml version="1.0" encoding="UTF-8" ?>
@@ -49,7 +49,20 @@ In this exemple, we will assume that the `client` and `vip` groups exists`.
               <customergroup group="vip">
                   <customergroupacl aclcode="vip-perks">
                       <access right="VIEW"/>
-                      </customergroupacl>
+                  </customergroupacl>
+              </customergroup>
+
+              <customergroup group="extra-vip-1">
+                  <extends-customergroupacl
+                      group="vip"
+                  />
+              </customergroup>
+
+              <customergroup group="extra-vip-2">
+                  <extends-customergroupacl
+                      group="vip"
+                      aclcode="vip-perks"
+                  />
               </customergroup>
           </customergroups>
       <acls>
@@ -57,6 +70,8 @@ In this exemple, we will assume that the `client` and `vip` groups exists`.
 ```
 
 Here we define an ACL resource `vip-perks` and grant `VIEW` type access to this resource to the `vip` group.
+The `extra-vip-1` group is set to have the same accesses as the `vip` group.
+The `extra-vip-2` group is also set to have the same rights as the `vip` group, but only for the `vip-perks` ACL resource.
 
 ### Using the back office 
 
