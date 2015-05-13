@@ -69,7 +69,8 @@ class AclXmlFileloader
     protected function parseAcls(SimpleXMLElement $xml, Module $module)
     {
         //If there are no acl node continue to parse the xml
-        if (false === $acls = $xml->xpath('//config:acls/config:acl')) {
+        $acls = $xml->xpath('//config:acls/config:acl');
+        if (false === $acls) {
             return;
         }
 
@@ -127,7 +128,8 @@ class AclXmlFileloader
     protected function parseCustomerGroups(SimpleXMLElement $xml)
     {
         //If there are no customergroups node continue to parse the xml
-        if (empty($customerGroups = $xml->xpath('//config:customergroups/config:customergroup'))) {
+        $customerGroups = $xml->xpath('//config:customergroups/config:customergroup');
+        if (empty($customerGroups)) {
             return;
         }
 
