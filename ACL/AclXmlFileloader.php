@@ -80,7 +80,7 @@ class AclXmlFileloader
             $code = $acl->getAttributeAsPHP("code");
 
             if (AclQuery::create()->findOneByCode($code)) {
-                return;
+                continue;
             }
 
             $newAcl = new Acl();
