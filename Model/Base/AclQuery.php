@@ -25,12 +25,14 @@ use Thelia\Model\Module;
  *
  * @method     ChildAclQuery orderByModuleId($order = Criteria::ASC) Order by the module_id column
  * @method     ChildAclQuery orderByCode($order = Criteria::ASC) Order by the code column
+ * @method     ChildAclQuery orderByEntityClass($order = Criteria::ASC) Order by the entity_class column
  * @method     ChildAclQuery orderById($order = Criteria::ASC) Order by the id column
  * @method     ChildAclQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
  * @method     ChildAclQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
  *
  * @method     ChildAclQuery groupByModuleId() Group by the module_id column
  * @method     ChildAclQuery groupByCode() Group by the code column
+ * @method     ChildAclQuery groupByEntityClass() Group by the entity_class column
  * @method     ChildAclQuery groupById() Group by the id column
  * @method     ChildAclQuery groupByCreatedAt() Group by the created_at column
  * @method     ChildAclQuery groupByUpdatedAt() Group by the updated_at column
@@ -56,12 +58,14 @@ use Thelia\Model\Module;
  *
  * @method     ChildAcl findOneByModuleId(int $module_id) Return the first ChildAcl filtered by the module_id column
  * @method     ChildAcl findOneByCode(string $code) Return the first ChildAcl filtered by the code column
+ * @method     ChildAcl findOneByEntityClass(string $entity_class) Return the first ChildAcl filtered by the entity_class column
  * @method     ChildAcl findOneById(int $id) Return the first ChildAcl filtered by the id column
  * @method     ChildAcl findOneByCreatedAt(string $created_at) Return the first ChildAcl filtered by the created_at column
  * @method     ChildAcl findOneByUpdatedAt(string $updated_at) Return the first ChildAcl filtered by the updated_at column
  *
  * @method     array findByModuleId(int $module_id) Return ChildAcl objects filtered by the module_id column
  * @method     array findByCode(string $code) Return ChildAcl objects filtered by the code column
+ * @method     array findByEntityClass(string $entity_class) Return ChildAcl objects filtered by the entity_class column
  * @method     array findById(int $id) Return ChildAcl objects filtered by the id column
  * @method     array findByCreatedAt(string $created_at) Return ChildAcl objects filtered by the created_at column
  * @method     array findByUpdatedAt(string $updated_at) Return ChildAcl objects filtered by the updated_at column
@@ -153,7 +157,7 @@ abstract class AclQuery extends ModelCriteria
      */
     protected function findPkSimple($key, $con)
     {
-        $sql = 'SELECT MODULE_ID, CODE, ID, CREATED_AT, UPDATED_AT FROM acl WHERE ID = :p0';
+        $sql = 'SELECT MODULE_ID, CODE, ENTITY_CLASS, ID, CREATED_AT, UPDATED_AT FROM acl WHERE ID = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -312,6 +316,35 @@ abstract class AclQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(AclTableMap::CODE, $code, $comparison);
+    }
+
+    /**
+     * Filter the query on the entity_class column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByEntityClass('fooValue');   // WHERE entity_class = 'fooValue'
+     * $query->filterByEntityClass('%fooValue%'); // WHERE entity_class LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $entityClass The value to use as filter.
+     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildAclQuery The current query, for fluid interface
+     */
+    public function filterByEntityClass($entityClass = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($entityClass)) {
+                $comparison = Criteria::IN;
+            } elseif (preg_match('/[\%\*]/', $entityClass)) {
+                $entityClass = str_replace('*', '%', $entityClass);
+                $comparison = Criteria::LIKE;
+            }
+        }
+
+        return $this->addUsingAlias(AclTableMap::ENTITY_CLASS, $entityClass, $comparison);
     }
 
     /**

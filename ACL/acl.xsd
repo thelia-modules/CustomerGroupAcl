@@ -14,7 +14,6 @@
                             <xsd:element name="acl" maxOccurs="unbounded" minOccurs="0">
                                 <xsd:complexType>
                                     <xsd:choice>
-
                                         <xsd:element name="descriptive" maxOccurs="unbounded" minOccurs="1">
                                             <xsd:complexType>
                                                 <xsd:sequence>
@@ -24,8 +23,9 @@
                                                 <xsd:attribute type="xsd:string" name="locale" use="required"/>
                                             </xsd:complexType>
                                         </xsd:element>
-
                                     </xsd:choice>
+
+                                    <xsd:attribute type="xsd:string" name="classname" />
                                     <xsd:attribute type="xsd:string" name="code" use="required"/>
                                 </xsd:complexType>
                             </xsd:element>

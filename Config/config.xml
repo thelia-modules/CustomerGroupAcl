@@ -24,6 +24,7 @@
 
         <service id="customer_group_acl.tool" class="CustomerGroupAcl\Tools\CustomerGroupAclTool" scope="request">
             <argument type="service" id="request" />
+            <argument type="service" id="event_dispatcher" />
         </service>
 
         <service id="customer_group_acl.fileloader.xml" class="CustomerGroupAcl\ACL\AclXmlFileloader" >

@@ -18,6 +18,18 @@ Add it in your main Thelia composer.json file
 composer require thelia/customer-group-acl-module:~0.1
 ```
 
+## Update
+
+### 0.1.3
+
+* Change acl data table to add class_name, the class name to check specific object acl ;
+* Dispatch `CheckAclEvent_[resource]` ;
+* Change checkAcl definition to checkAcl($resources, $accesses, $accessOr = false, $entityId = null, $dispatchEvent = false) :
+    * $entityId, object identifying, if isset resources must be alone,
+    * $dispatchEvent, if is set, CheckAclEvent are dispatch, default false ;
+
+Execute `setup/update-0.1.2-0.1.3.sql` script.
+
 ## Configuration
 
 ### Using the configuration file

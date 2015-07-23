@@ -3,9 +3,13 @@
 namespace CustomerGroupAcl\Tools;
 
 use CustomerGroup\CustomerGroup;
+use CustomerGroupAcl\Event\CheckAclEvent;
+use CustomerGroupAcl\Event\CustomerGroupAclEvents;
 use CustomerGroupAcl\Manager\CustomerGroupAclAccessManager;
+use CustomerGroupAcl\Model\Base\AclQuery;
 use CustomerGroupAcl\Model\CustomerGroupAclQuery;
 use Propel\Runtime\ActiveQuery\Criteria;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Thelia\Core\HttpFoundation\Request;
 use Thelia\Core\HttpFoundation\Session\Session;
 
@@ -19,6 +23,8 @@ class CustomerGroupAclTool
 {
     /** @var Request */
     protected $request;
+    /** @var EventDispatcher  */
+    protected $dispatcher;
 
     /**
      * Cache for ACL checking results: parameters hash => result.
@@ -28,30 +34,35 @@ class CustomerGroupAclTool
 
     /**
      * @param Request $request
+     * @param         $dispatcher
      */
-    public function __construct(Request $request)
+    public function __construct(Request $request, EventDispatcher $dispatcher)
     {
         $this->request = $request;
+        $this->dispatcher = $dispatcher;
     }
 
     /**
      * Check if the current user is granted access to a ressource.
      * Also performs runtime cache management.
      *
-     * @param string|array $resources Resource name or resources list.
-     * @param string|array $accesses  Access name or accesses list.
-     * @param boolean      $accessOr  Whether to return true if at least one resource/access couple is granted.
+     * @param string|array $resources     Resource name or resources list.
+     * @param string|array $accesses      Access name or accesses list.
+     * @param boolean      $accessOr      Whether to return true if at least one resource/access couple is granted.
+     * @param null|int     $entityId
+     * @param bool         $dispatchEvent If CheckAclEvent must be dispatch
      *
-     * @return boolean Whether access is granted.
+     * @return bool Whether access is granted.
+     * @throws \Exception
      */
-    public function checkAcl($resources, $accesses, $accessOr = false)
+    public function checkAcl($resources, $accesses, $accessOr = false, $entityId = null)
     {
         if (!is_array($resources)) {
-            $resources = (array) $resources;
+            $resources = (array)$resources;
         }
 
         if (!is_array($accesses)) {
-            $accesses = (array) $accesses;
+            $accesses = (array)$accesses;
         }
         sort($accesses);
 
@@ -61,7 +72,29 @@ class CustomerGroupAclTool
             $this->runtimeCache[$runtimeCacheKey] = $this->performCheck($resources, $accesses, $accessOr);
         }
 
-        return $this->runtimeCache[$runtimeCacheKey];
+        if( !$this->runtimeCache[$runtimeCacheKey] ) return false;
+
+        if( isset($entityId) && count($resources) > 1 ){
+            throw new \Exception(
+                "Verification of ACLs cannot run over several resources if an entity ID is specified",
+                "500"
+            );
+        }
+
+        $resource = AclQuery::create()->findOneByCode($resources[0]);
+        $className = isset($resource) ? $resource->getEntityClass() : null;
+        $event = new CheckAclEvent();
+        $event
+            ->setResource($resources[0])
+            ->setEntityId($entityId)
+            ->setAccesses($accesses)
+            ->setAccessesOr($accessOr)
+            ->setClassNames($className)
+        ;
+        $eventName = CustomerGroupAclEvents::CHECK_ACL."_".$resources[0];
+        $this->dispatcher->dispatch($eventName, $event);
+
+        return $event->getResult();
     }
 
     /**

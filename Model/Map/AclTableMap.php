@@ -58,7 +58,7 @@ class AclTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 5;
+    const NUM_COLUMNS = 6;
 
     /**
      * The number of lazy-loaded columns
@@ -68,7 +68,7 @@ class AclTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 5;
+    const NUM_HYDRATE_COLUMNS = 6;
 
     /**
      * the column name for the MODULE_ID field
@@ -79,6 +79,11 @@ class AclTableMap extends TableMap
      * the column name for the CODE field
      */
     const CODE = 'acl.CODE';
+
+    /**
+     * the column name for the ENTITY_CLASS field
+     */
+    const ENTITY_CLASS = 'acl.ENTITY_CLASS';
 
     /**
      * the column name for the ID field
@@ -116,12 +121,12 @@ class AclTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('ModuleId', 'Code', 'Id', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_STUDLYPHPNAME => array('moduleId', 'code', 'id', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(AclTableMap::MODULE_ID, AclTableMap::CODE, AclTableMap::ID, AclTableMap::CREATED_AT, AclTableMap::UPDATED_AT, ),
-        self::TYPE_RAW_COLNAME   => array('MODULE_ID', 'CODE', 'ID', 'CREATED_AT', 'UPDATED_AT', ),
-        self::TYPE_FIELDNAME     => array('module_id', 'code', 'id', 'created_at', 'updated_at', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, )
+        self::TYPE_PHPNAME       => array('ModuleId', 'Code', 'EntityClass', 'Id', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_STUDLYPHPNAME => array('moduleId', 'code', 'entityClass', 'id', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(AclTableMap::MODULE_ID, AclTableMap::CODE, AclTableMap::ENTITY_CLASS, AclTableMap::ID, AclTableMap::CREATED_AT, AclTableMap::UPDATED_AT, ),
+        self::TYPE_RAW_COLNAME   => array('MODULE_ID', 'CODE', 'ENTITY_CLASS', 'ID', 'CREATED_AT', 'UPDATED_AT', ),
+        self::TYPE_FIELDNAME     => array('module_id', 'code', 'entity_class', 'id', 'created_at', 'updated_at', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
     );
 
     /**
@@ -131,12 +136,12 @@ class AclTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('ModuleId' => 0, 'Code' => 1, 'Id' => 2, 'CreatedAt' => 3, 'UpdatedAt' => 4, ),
-        self::TYPE_STUDLYPHPNAME => array('moduleId' => 0, 'code' => 1, 'id' => 2, 'createdAt' => 3, 'updatedAt' => 4, ),
-        self::TYPE_COLNAME       => array(AclTableMap::MODULE_ID => 0, AclTableMap::CODE => 1, AclTableMap::ID => 2, AclTableMap::CREATED_AT => 3, AclTableMap::UPDATED_AT => 4, ),
-        self::TYPE_RAW_COLNAME   => array('MODULE_ID' => 0, 'CODE' => 1, 'ID' => 2, 'CREATED_AT' => 3, 'UPDATED_AT' => 4, ),
-        self::TYPE_FIELDNAME     => array('module_id' => 0, 'code' => 1, 'id' => 2, 'created_at' => 3, 'updated_at' => 4, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, )
+        self::TYPE_PHPNAME       => array('ModuleId' => 0, 'Code' => 1, 'EntityClass' => 2, 'Id' => 3, 'CreatedAt' => 4, 'UpdatedAt' => 5, ),
+        self::TYPE_STUDLYPHPNAME => array('moduleId' => 0, 'code' => 1, 'entityClass' => 2, 'id' => 3, 'createdAt' => 4, 'updatedAt' => 5, ),
+        self::TYPE_COLNAME       => array(AclTableMap::MODULE_ID => 0, AclTableMap::CODE => 1, AclTableMap::ENTITY_CLASS => 2, AclTableMap::ID => 3, AclTableMap::CREATED_AT => 4, AclTableMap::UPDATED_AT => 5, ),
+        self::TYPE_RAW_COLNAME   => array('MODULE_ID' => 0, 'CODE' => 1, 'ENTITY_CLASS' => 2, 'ID' => 3, 'CREATED_AT' => 4, 'UPDATED_AT' => 5, ),
+        self::TYPE_FIELDNAME     => array('module_id' => 0, 'code' => 1, 'entity_class' => 2, 'id' => 3, 'created_at' => 4, 'updated_at' => 5, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
     );
 
     /**
@@ -157,6 +162,7 @@ class AclTableMap extends TableMap
         // columns
         $this->addForeignKey('MODULE_ID', 'ModuleId', 'INTEGER', 'module', 'ID', true, null, null);
         $this->addColumn('CODE', 'Code', 'VARCHAR', true, 55, null);
+        $this->addColumn('ENTITY_CLASS', 'EntityClass', 'VARCHAR', false, 255, null);
         $this->addPrimaryKey('ID', 'Id', 'INTEGER', true, null, null);
         $this->addColumn('CREATED_AT', 'CreatedAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('UPDATED_AT', 'UpdatedAt', 'TIMESTAMP', false, null, null);
@@ -211,11 +217,11 @@ class AclTableMap extends TableMap
     public static function getPrimaryKeyHashFromRow($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
         // If the PK cannot be derived from the row, return NULL.
-        if ($row[TableMap::TYPE_NUM == $indexType ? 2 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)] === null) {
+        if ($row[TableMap::TYPE_NUM == $indexType ? 3 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)] === null) {
             return null;
         }
 
-        return (string) $row[TableMap::TYPE_NUM == $indexType ? 2 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
+        return (string) $row[TableMap::TYPE_NUM == $indexType ? 3 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
     }
 
     /**
@@ -235,7 +241,7 @@ class AclTableMap extends TableMap
 
             return (int) $row[
                             $indexType == TableMap::TYPE_NUM
-                            ? 2 + $offset
+                            ? 3 + $offset
                             : self::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)
                         ];
     }
@@ -337,12 +343,14 @@ class AclTableMap extends TableMap
         if (null === $alias) {
             $criteria->addSelectColumn(AclTableMap::MODULE_ID);
             $criteria->addSelectColumn(AclTableMap::CODE);
+            $criteria->addSelectColumn(AclTableMap::ENTITY_CLASS);
             $criteria->addSelectColumn(AclTableMap::ID);
             $criteria->addSelectColumn(AclTableMap::CREATED_AT);
             $criteria->addSelectColumn(AclTableMap::UPDATED_AT);
         } else {
             $criteria->addSelectColumn($alias . '.MODULE_ID');
             $criteria->addSelectColumn($alias . '.CODE');
+            $criteria->addSelectColumn($alias . '.ENTITY_CLASS');
             $criteria->addSelectColumn($alias . '.ID');
             $criteria->addSelectColumn($alias . '.CREATED_AT');
             $criteria->addSelectColumn($alias . '.UPDATED_AT');

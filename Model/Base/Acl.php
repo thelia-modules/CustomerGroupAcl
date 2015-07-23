@@ -74,6 +74,12 @@ abstract class Acl implements ActiveRecordInterface
     protected $code;
 
     /**
+     * The value for the entity_class field.
+     * @var        string
+     */
+    protected $entity_class;
+
+    /**
      * The value for the id field.
      * @var        int
      */
@@ -423,6 +429,17 @@ abstract class Acl implements ActiveRecordInterface
     }
 
     /**
+     * Get the [entity_class] column value.
+     *
+     * @return   string
+     */
+    public function getEntityClass()
+    {
+
+        return $this->entity_class;
+    }
+
+    /**
      * Get the [id] column value.
      *
      * @return   int
@@ -518,6 +535,27 @@ abstract class Acl implements ActiveRecordInterface
 
         return $this;
     } // setCode()
+
+    /**
+     * Set the value of [entity_class] column.
+     *
+     * @param      string $v new value
+     * @return   \CustomerGroupAcl\Model\Acl The current object (for fluent API support)
+     */
+    public function setEntityClass($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->entity_class !== $v) {
+            $this->entity_class = $v;
+            $this->modifiedColumns[AclTableMap::ENTITY_CLASS] = true;
+        }
+
+
+        return $this;
+    } // setEntityClass()
 
     /**
      * Set the value of [id] column.
@@ -625,16 +663,19 @@ abstract class Acl implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : AclTableMap::translateFieldName('Code', TableMap::TYPE_PHPNAME, $indexType)];
             $this->code = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : AclTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : AclTableMap::translateFieldName('EntityClass', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->entity_class = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : AclTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
             $this->id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : AclTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : AclTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, '\DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : AclTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : AclTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -647,7 +688,7 @@ abstract class Acl implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 5; // 5 = AclTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 6; // 6 = AclTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException("Error populating \CustomerGroupAcl\Model\Acl object", 0, $e);
@@ -927,6 +968,9 @@ abstract class Acl implements ActiveRecordInterface
         if ($this->isColumnModified(AclTableMap::CODE)) {
             $modifiedColumns[':p' . $index++]  = 'CODE';
         }
+        if ($this->isColumnModified(AclTableMap::ENTITY_CLASS)) {
+            $modifiedColumns[':p' . $index++]  = 'ENTITY_CLASS';
+        }
         if ($this->isColumnModified(AclTableMap::ID)) {
             $modifiedColumns[':p' . $index++]  = 'ID';
         }
@@ -952,6 +996,9 @@ abstract class Acl implements ActiveRecordInterface
                         break;
                     case 'CODE':
                         $stmt->bindValue($identifier, $this->code, PDO::PARAM_STR);
+                        break;
+                    case 'ENTITY_CLASS':
+                        $stmt->bindValue($identifier, $this->entity_class, PDO::PARAM_STR);
                         break;
                     case 'ID':
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
@@ -1031,12 +1078,15 @@ abstract class Acl implements ActiveRecordInterface
                 return $this->getCode();
                 break;
             case 2:
-                return $this->getId();
+                return $this->getEntityClass();
                 break;
             case 3:
-                return $this->getCreatedAt();
+                return $this->getId();
                 break;
             case 4:
+                return $this->getCreatedAt();
+                break;
+            case 5:
                 return $this->getUpdatedAt();
                 break;
             default:
@@ -1070,9 +1120,10 @@ abstract class Acl implements ActiveRecordInterface
         $result = array(
             $keys[0] => $this->getModuleId(),
             $keys[1] => $this->getCode(),
-            $keys[2] => $this->getId(),
-            $keys[3] => $this->getCreatedAt(),
-            $keys[4] => $this->getUpdatedAt(),
+            $keys[2] => $this->getEntityClass(),
+            $keys[3] => $this->getId(),
+            $keys[4] => $this->getCreatedAt(),
+            $keys[5] => $this->getUpdatedAt(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -1130,12 +1181,15 @@ abstract class Acl implements ActiveRecordInterface
                 $this->setCode($value);
                 break;
             case 2:
-                $this->setId($value);
+                $this->setEntityClass($value);
                 break;
             case 3:
-                $this->setCreatedAt($value);
+                $this->setId($value);
                 break;
             case 4:
+                $this->setCreatedAt($value);
+                break;
+            case 5:
                 $this->setUpdatedAt($value);
                 break;
         } // switch()
@@ -1164,9 +1218,10 @@ abstract class Acl implements ActiveRecordInterface
 
         if (array_key_exists($keys[0], $arr)) $this->setModuleId($arr[$keys[0]]);
         if (array_key_exists($keys[1], $arr)) $this->setCode($arr[$keys[1]]);
-        if (array_key_exists($keys[2], $arr)) $this->setId($arr[$keys[2]]);
-        if (array_key_exists($keys[3], $arr)) $this->setCreatedAt($arr[$keys[3]]);
-        if (array_key_exists($keys[4], $arr)) $this->setUpdatedAt($arr[$keys[4]]);
+        if (array_key_exists($keys[2], $arr)) $this->setEntityClass($arr[$keys[2]]);
+        if (array_key_exists($keys[3], $arr)) $this->setId($arr[$keys[3]]);
+        if (array_key_exists($keys[4], $arr)) $this->setCreatedAt($arr[$keys[4]]);
+        if (array_key_exists($keys[5], $arr)) $this->setUpdatedAt($arr[$keys[5]]);
     }
 
     /**
@@ -1180,6 +1235,7 @@ abstract class Acl implements ActiveRecordInterface
 
         if ($this->isColumnModified(AclTableMap::MODULE_ID)) $criteria->add(AclTableMap::MODULE_ID, $this->module_id);
         if ($this->isColumnModified(AclTableMap::CODE)) $criteria->add(AclTableMap::CODE, $this->code);
+        if ($this->isColumnModified(AclTableMap::ENTITY_CLASS)) $criteria->add(AclTableMap::ENTITY_CLASS, $this->entity_class);
         if ($this->isColumnModified(AclTableMap::ID)) $criteria->add(AclTableMap::ID, $this->id);
         if ($this->isColumnModified(AclTableMap::CREATED_AT)) $criteria->add(AclTableMap::CREATED_AT, $this->created_at);
         if ($this->isColumnModified(AclTableMap::UPDATED_AT)) $criteria->add(AclTableMap::UPDATED_AT, $this->updated_at);
@@ -1248,6 +1304,7 @@ abstract class Acl implements ActiveRecordInterface
     {
         $copyObj->setModuleId($this->getModuleId());
         $copyObj->setCode($this->getCode());
+        $copyObj->setEntityClass($this->getEntityClass());
         $copyObj->setCreatedAt($this->getCreatedAt());
         $copyObj->setUpdatedAt($this->getUpdatedAt());
 
@@ -1846,6 +1903,7 @@ abstract class Acl implements ActiveRecordInterface
     {
         $this->module_id = null;
         $this->code = null;
+        $this->entity_class = null;
         $this->id = null;
         $this->created_at = null;
         $this->updated_at = null;
