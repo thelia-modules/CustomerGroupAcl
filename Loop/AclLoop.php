@@ -99,7 +99,8 @@ class AclLoop extends BaseI18nLoop implements PropelSearchLoopInterface
                 ->set('MODULE_ID', $acl->getModuleId())
                 ->set('CODE', $acl->getCode())
                 ->set('TITLE', $acl->getVirtualColumn('i18n_TITLE'))
-                ->set('DESCRIPTION', $acl->getVirtualColumn('i18n_DESCRIPTION'));
+                ->set('DESCRIPTION', $acl->getVirtualColumn('i18n_DESCRIPTION'))
+                ->set('ENTITY_CLASS', $acl->getEntityClass());
 
             $loopResult->addRow($row);
         }

@@ -55,7 +55,7 @@ class CustomerGroupAclTool
      * @return bool Whether access is granted.
      * @throws \Exception
      */
-    public function checkAcl($resources, $accesses, $accessOr = false, $entityId = null, $dispatchEvent = false)
+    public function checkAcl($resources, $accesses, $accessOr = false, $entityId = null)
     {
         if (!is_array($resources)) {
             $resources = (array)$resources;
@@ -72,33 +72,29 @@ class CustomerGroupAclTool
             $this->runtimeCache[$runtimeCacheKey] = $this->performCheck($resources, $accesses, $accessOr);
         }
 
-        $result =  $this->runtimeCache[$runtimeCacheKey];
+        if( !$this->runtimeCache[$runtimeCacheKey] ) return false;
 
-        if( $dispatchEvent ){
-            if( isset($entityId) && count($resources) > 1 ){
-                throw new \Exception(
-                    "La vérification des acl ne peut s'effectuer sur plusieurs ressources si l'entityId est spécifié",
-                    "500"
-                );
-            }
-
-            $resource = AclQuery::create()->findOneByCode($resources[0]);
-            $className = isset($resource) ? $resource->getEntityClass() : null;
-            $event = new CheckAclEvent();
-            $event
-                ->setResource($resources[0])
-                ->setEntityId($entityId)
-                ->setAccesses($accesses)
-                ->setAccessesOr($accessOr)
-                ->setClassNames($className)
-            ;
-            $eventName = CustomerGroupAclEvents::CHECK_ACL."_".$resources[0];
-            $this->dispatcher->dispatch($eventName, $event);
-
-            $result = $event->getResult();
+        if( isset($entityId) && count($resources) > 1 ){
+            throw new \Exception(
+                "Verification of ACLs cannot run over several resources if an entity ID is specified",
+                "500"
+            );
         }
 
-        return $result;
+        $resource = AclQuery::create()->findOneByCode($resources[0]);
+        $className = isset($resource) ? $resource->getEntityClass() : null;
+        $event = new CheckAclEvent();
+        $event
+            ->setResource($resources[0])
+            ->setEntityId($entityId)
+            ->setAccesses($accesses)
+            ->setAccessesOr($accessOr)
+            ->setClassNames($className)
+        ;
+        $eventName = CustomerGroupAclEvents::CHECK_ACL."_".$resources[0];
+        $this->dispatcher->dispatch($eventName, $event);
+
+        return $event->getResult();
     }
 
     /**

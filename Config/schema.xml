@@ -4,6 +4,7 @@
     <table name="acl" namespace="CustomerGroupAcl\Model">
         <column name="module_id" required="true" type="INTEGER" />
         <column name="code" required="true" size="55" type="VARCHAR" />
+        <column name="entity_class" required="false" size="255" type="VARCHAR" />
         <column name="title" required="true" size="255" type="VARCHAR" />
         <column name="description" size="255" type="VARCHAR" />
 

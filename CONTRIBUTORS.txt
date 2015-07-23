@@ -4,3 +4,5 @@ Baptiste Cabarrou
 Vincent Lopes
 Guillaume Michard
 Benjamin Perche
+
+David Gros, version 0.1.3, Add CheckAclEvent dispatch

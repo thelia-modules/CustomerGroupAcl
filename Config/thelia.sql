@@ -13,6 +13,7 @@ CREATE TABLE `acl`
 (
     `module_id` INTEGER NOT NULL,
     `code` VARCHAR(55) NOT NULL,
+    `entity_class` VARCHAR(255),
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `created_at` DATETIME,
     `updated_at` DATETIME,
