@@ -78,9 +78,9 @@ class CustomerGroupAclSmarty extends AbstractSmartyPlugin
      */
     public function checkAclPage($params, $template)
     {
-        list($codes, $accesses, $accessOr) = $this->checkParameters($params);
+        list($codes, $accesses, $accessOr, $entityId) = $this->checkParameters($params);
 
-        if ($this->customerGroupAclTool->checkAcl($this->explode($codes), $this->explode($accesses), $accessOr)) {
+        if ($this->customerGroupAclTool->checkAcl($this->explode($codes), $this->explode($accesses), $accessOr, $entityId)) {
             return null;
         }
 
@@ -109,7 +109,7 @@ class CustomerGroupAclSmarty extends AbstractSmartyPlugin
     public function checkAclBlock(array $params, $content, $template, &$repeat)
     {
         if ($content === null) {
-            list($codes, $accesses, $accessOr, $name) = $this->checkParameters($params);
+            list($codes, $accesses, $accessOr, $entityId, $name) = $this->checkParameters($params);
 
             if ($name !== null) {
                 if (array_key_exists($name, $this->rel)) {
@@ -119,7 +119,7 @@ class CustomerGroupAclSmarty extends AbstractSmartyPlugin
                 $this->rel[$name] = true;
             }
 
-            if (!$this->customerGroupAclTool->checkAcl(explode(',', $codes), explode(',', $accesses), $accessOr)) {
+            if (!$this->customerGroupAclTool->checkAcl(explode(',', $codes), explode(',', $accesses), $accessOr, $entityId)) {
                 if ($name !== null) {
                     $this->rel[$name] = false;
                 }
@@ -175,11 +175,12 @@ class CustomerGroupAclSmarty extends AbstractSmartyPlugin
         $accesses = $this->getNormalizedParam($params, 'access');
         $accessOr = $this->getParam($params, 'access_or', false);
         $name = $this->getNormalizedParam($params, 'name');
+        $entityId = $this->getNormalizedParam($params, 'entityId', null);
 
         if ($codes === null || $accesses === null) {
             throw new SmartyPluginException('Checking acl requires code and access parameters');
         }
 
-        return [$codes, $accesses, $accessOr, $name];
+        return [$codes, $accesses, $accessOr, $entityId, $name];
     }
 }

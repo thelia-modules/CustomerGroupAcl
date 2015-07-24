@@ -32,7 +32,7 @@ class CheckAclEvent extends ActionEvent
     /** @var  bool */
     protected $accessesOr;
     /** @var  bool  */
-    protected $result;
+    protected $result = true;
 
     /**
      * @return mixed
