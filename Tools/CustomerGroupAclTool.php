@@ -10,6 +10,7 @@ use CustomerGroupAcl\Model\Base\AclQuery;
 use CustomerGroupAcl\Model\CustomerGroupAclQuery;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Thelia\Core\HttpFoundation\Request;
 use Thelia\Core\HttpFoundation\Session\Session;
 
@@ -23,7 +24,7 @@ class CustomerGroupAclTool
 {
     /** @var Request */
     protected $request;
-    /** @var EventDispatcher  */
+    /** @var EventDispatcherInterface  */
     protected $dispatcher;
 
     /**
@@ -34,9 +35,9 @@ class CustomerGroupAclTool
 
     /**
      * @param Request $request
-     * @param         $dispatcher
+     * @param EventDispatcherInterface $dispatcher
      */
-    public function __construct(Request $request, EventDispatcher $dispatcher)
+    public function __construct(Request $request, EventDispatcherInterface $dispatcher)
     {
         $this->request = $request;
         $this->dispatcher = $dispatcher;
