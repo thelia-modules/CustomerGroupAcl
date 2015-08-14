@@ -49,6 +49,7 @@ class AclLoopTest extends AbstractCustomerGroupAclTest
             "module" => $testAcl->getModuleId(),
             "code" => $testAcl->getCode(),
             "order" => "id",
+            "lang" => "en_US",
         ];
     }
 
@@ -87,6 +88,8 @@ class AclLoopTest extends AbstractCustomerGroupAclTest
     {
         /** @var Acl $testAcl */
         $testAcl = $this->testAcls[0];
+        $testAcl->setLocale($this->testArguments["lang"]);
+
         $this->loop->initializeArgs($this->testArguments);
 
         $loopResult = $this->loop->exec(
