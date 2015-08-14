@@ -35,7 +35,7 @@ class CustomerGroupAclToolTest extends AbstractCustomerGroupAclTest
 
         /** @var Request $request */
         $request = $this->container->get("request");
-        $this->aclTool = new CustomerGroupAclTool($request);
+        $this->aclTool = new CustomerGroupAclTool($request, $this->dispatcher);
 
         $this->loadAclFixtures();
     }
