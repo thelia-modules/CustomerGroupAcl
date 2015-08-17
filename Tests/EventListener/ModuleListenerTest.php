@@ -28,7 +28,7 @@ class ModuleListenerTest extends AbstractCustomerGroupAclTest
 
         // get a mock XML file loader
         $this->aclXmlFileloader = $this
-            ->getMockBuilder(AclXmlFileloader::class)
+            ->getMockBuilder('CustomerGroupAcl\ACL\AclXmlFileloader')
             ->setConstructorArgs([
                 new Translator($this->container)
             ])
