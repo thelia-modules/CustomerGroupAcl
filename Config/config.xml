@@ -9,34 +9,6 @@
         <form name="acl.form" class="CustomerGroupAcl\Form\AclForm" />
     </forms>
 
-    <services>
-        <service id="customer_group_acl.listener.acl" class="CustomerGroupAcl\EventListener\AclListener">
-            <tag name="kernel.event_subscriber"/>
-        </service>
-        <service id="customer_group_acl.listener.customer_group_acl" class="CustomerGroupAcl\EventListener\CustomerGroupAclListener">
-            <tag name="kernel.event_subscriber"/>
-        </service>
-        <service id="customer_group_acl.smarty.customer_group_acl" class="CustomerGroupAcl\Smarty\CustomerGroupAclSmarty" scope="request">
-            <tag name="thelia.parser.register_plugin"/>
-            <argument type="service" id="customer_group_acl.tool" />
-            <argument type="service" id="request" />
-        </service>
-
-        <service id="customer_group_acl.tool" class="CustomerGroupAcl\Tools\CustomerGroupAclTool" scope="request">
-            <argument type="service" id="request" />
-            <argument type="service" id="event_dispatcher" />
-        </service>
-
-        <service id="customer_group_acl.fileloader.xml" class="CustomerGroupAcl\ACL\AclXmlFileloader" >
-            <argument type="service" id="thelia.translator" />
-        </service>
-
-        <service id="customer_group_acl.listener.module" class="CustomerGroupAcl\EventListener\ModuleListener">
-            <tag name="kernel.event_subscriber"/>
-            <argument type="service" id="customer_group_acl.fileloader.xml" />
-        </service>
-    </services>
-
     <hooks>
         <hook id="customer_group_acl.hook" class="CustomerGroupAcl\Hook\CustomerGroupAclHook" scope="request">
             <tag name="hook.event_listener" event="main.top-menu-tools" type="back" method="customerGroupAclHookTool" active="1" />

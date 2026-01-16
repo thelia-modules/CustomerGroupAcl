@@ -18,7 +18,7 @@ use Thelia\Type\BooleanOrBothType;
  */
 class CustomerGroupAclLoop extends BaseLoop implements PropelSearchLoopInterface
 {
-    public function parseResults(LoopResult $loopResult)
+    public function parseResults(LoopResult $loopResult): LoopResult
     {
         /** @var CustomerGroupAcl $customerGroupAcl */
         foreach ($loopResult->getResultDataCollection() as $customerGroupAcl) {
@@ -35,7 +35,7 @@ class CustomerGroupAclLoop extends BaseLoop implements PropelSearchLoopInterface
         return $loopResult;
     }
 
-    protected function getArgDefinitions()
+    protected function getArgDefinitions(): ArgumentCollection
     {
         return new ArgumentCollection(
             Argument::createIntListTypeArgument('acl'),
@@ -45,7 +45,7 @@ class CustomerGroupAclLoop extends BaseLoop implements PropelSearchLoopInterface
         );
     }
 
-    public function buildModelCriteria()
+    public function buildModelCriteria(): CustomerGroupAclQuery
     {
         $search = new CustomerGroupAclQuery();
 

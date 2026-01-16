@@ -9,51 +9,52 @@ use CustomerGroupAcl\Manager\CustomerGroupAclAccessManager;
 use CustomerGroupAcl\Model\Acl;
 use CustomerGroupAcl\Model\AclQuery;
 use CustomerGroupAcl\Model\CustomerGroupAclQuery;
+use Propel\Runtime\Exception\PropelException;
+use SimpleXMLElement;
 use Symfony\Component\Config\Util\XmlUtils;
 use Symfony\Component\DependencyInjection\Exception\RuntimeException;
-use Symfony\Component\DependencyInjection\SimpleXMLElement;
 use Thelia\Core\Translation\Translator;
 use Thelia\Model\Module;
 
 /**
  * Loader for the XML ACL configuration files
  */
-class AclXmlFileloader
+class AclXmlFileLoader
 {
     /** @var Translator */
-    protected $translator;
+    protected Translator $translator;
 
     /**
      * Map of the access types => access type code
      * @var array
      */
-    protected $accessPows;
+    protected array $accessPows;
 
     /**
      * Path of the file being processed
      * @var string
      */
-    protected $xmlFilePath;
+    protected string $xmlFilePath;
 
     public function __construct(Translator $translator)
     {
         $this->translator = $translator;
-
         $this->accessPows = CustomerGroupAclAccessManager::getAccessPows();
     }
 
     /**
-     * Search the acl.xml file in module folder and call methods for parse it
+     * Search the acl.xml file in the module folder and call methods to parse it
      * @param Module $module The enabled module
+     * @throws \Exception
      */
-    public function load(Module $module)
+    public function load(Module $module): void
     {
         $this->xmlFilePath = $module->getAbsoluteConfigPath(). DS ."acl.xml";
 
         if (file_exists($this->xmlFilePath)) {
             $xml = $this->parseFile($this->xmlFilePath);
 
-            $xml->registerXPathNamespace('config', 'http://thelia.net/acl');
+            $xml->registerXPathNamespace('config', 'https://thelia.net/acl');
 
             $this->parseAcls($xml, $module);
 
@@ -65,6 +66,7 @@ class AclXmlFileloader
      * Parse the acl in acl.xml file
      * @param SimpleXMLElement $xml The xml parsed by parseFile
      * @param Module $module The enabled module
+     * @throws PropelException
      */
     protected function parseAcls(SimpleXMLElement $xml, Module $module)
     {
@@ -77,7 +79,7 @@ class AclXmlFileloader
         //Add the acl if they no exists and parse his descriptive
         /** @var SimpleXMLElement $acl */
         foreach ($acls as $acl) {
-            $code = $acl->getAttributeAsPHP("code");
+            $code = $acl->attributes("code");
 
             if (AclQuery::create()->findOneByCode($code)) {
                 continue;
@@ -98,20 +100,21 @@ class AclXmlFileloader
      * Parse all descriptive of an acl
      *
      * @param SimpleXMLElement $acl The acl node
+     * @throws PropelException
      */
     protected function parseDescriptives(SimpleXMLElement $acl)
     {
         /** @var SimpleXMLElement $descriptive */
         foreach ($acl->children() as $descriptive) {
-            $aclI18n = AclQuery::create()->findOneByCode($acl->getAttributeAsPHP("code"));
+            $aclI18n = AclQuery::create()->findOneByCode($acl->attributes("code"));
 
-            $aclI18n->setLocale($descriptive->getAttributeAsPhp('locale'));
+            $aclI18n->setLocale($descriptive->attributes('locale'));
 
-            if ($title = $descriptive->getArgumentsAsPhp('title')) {
+            if ($title = $descriptive->attributes('title')) {
                 $aclI18n->setTitle($title[0]);
             }
 
-            if ($description = $descriptive->getArgumentsAsPhp('description')) {
+            if ($description = $descriptive->attributes('description')) {
                 $aclI18n->setDescription($description[0]);
             }
 
@@ -120,14 +123,16 @@ class AclXmlFileloader
     }
 
     /**
-     * Browse the customergroup and parse their children
+     * Browse the customer group and parse their children
      *
      * @param SimpleXMLElement $xml * The xml parsed by parseFile
      *
+     * @throws PropelException
+     * @throws \Exception
      */
-    protected function parseCustomerGroups(SimpleXMLElement $xml)
+    protected function parseCustomerGroups(SimpleXMLElement $xml): void
     {
-        //If there are no customergroups node continue to parse the xml
+        //If there are no customer groups node continue to parse the XML
         $customerGroups = $xml->xpath('//config:customergroups/config:customergroup');
         if (empty($customerGroups)) {
             return;
@@ -135,7 +140,7 @@ class AclXmlFileloader
 
         /** @var SimpleXMLElement $customerGroup */
         foreach ($customerGroups as $customerGroup) {
-            $customerGroupName = $customerGroup->getAttributeAsPhp('group');
+            $customerGroupName = $customerGroup->attributes('group');
             $customerGroupModel = CustomerGroupQuery::create()->findOneByCode($customerGroupName);
 
             /** @var SimpleXMLElement $customerGroupChild */
@@ -159,7 +164,7 @@ class AclXmlFileloader
      *
      * @param SimpleXMLElement $extendCustomerGroupAcl
      * @param CustomerGroup $customerGroupModel
-     * @param SimpleXMLElement $xml The global xml for retreive the parent
+     * @param SimpleXMLElement $xml The global XML for retrieve the parent
      * @throws \Exception
      * @throws \Propel\Runtime\Exception\PropelException
      */
@@ -167,11 +172,12 @@ class AclXmlFileloader
         SimpleXMLElement $extendCustomerGroupAcl,
         CustomerGroup $customerGroupModel,
         SimpleXMLElement $xml
-    ) {
-        $extendCustomerGroupCode = $extendCustomerGroupAcl->getAttributeAsPhp('group');
+    ): void
+    {
+        $extendCustomerGroupCode = $extendCustomerGroupAcl->attributes('group');
 
         //If an aclcode is specified in extends
-        $aclcode = $extendCustomerGroupAcl->getAttributeAsPhp('aclcode');
+        $aclcode = $extendCustomerGroupAcl->attributes('aclcode');
         if ($aclcode !== null && $aclcode !== '') {
             $extendCustomerGroupAcls =$xml->xpath(
                 '//config:customergroups'
@@ -179,7 +185,7 @@ class AclXmlFileloader
                 .'/config:customergroupacl[@aclcode="'.$aclcode.'"]'
             );
 
-            //Parse acls who match to customergroup and aclcode given in extends
+            //Parse acls who match to customer group and aclcode given in extends
             /** @var SimpleXMLElement $extendCustomerGroupAcl */
             foreach ($extendCustomerGroupAcls as $extendCustomerGroupAcl) {
                 $this->parseCustomerGroupAcl($extendCustomerGroupAcl, $customerGroupModel);
@@ -189,7 +195,7 @@ class AclXmlFileloader
             return;
         }
 
-        //Get the customerGroups who matches to the 'group' attribute given in extends-customergroupacl node
+        //Get the customerGroups who matches to the 'group' attribute given in the extends-customergroupacl node
         $extendCustomerGroups = $xml->xpath(
             '//config:customergroups'
             .'/config:customergroup[@group="'.$extendCustomerGroupCode.'"]'
@@ -221,25 +227,15 @@ class AclXmlFileloader
      *
      * @throws \Exception When an error is detected on xml file (customer group or acl don't exist)
      */
-    protected function parseCustomerGroupAcl(SimpleXMLElement $customerGroupAcl, CustomerGroup $customerGroupModel)
+    protected function parseCustomerGroupAcl(SimpleXMLElement $customerGroupAcl, CustomerGroup $customerGroupModel): void
     {
-        $acl = AclQuery::create()->findOneByCode($customerGroupAcl->getAttributeAsPhp('aclcode'));
-
-        if (null === $customerGroupModel) {
-            throw new \Exception(
-                $this->translator->trans(
-                    "Error in %a file the customer group '%s' doesn't exist",
-                    ['%a' => $this->xmlFilePath, '%s' => $customerGroupModel->getCode()],
-                    CustomerGroupAcl::DOMAIN_MESSAGE
-                )
-            );
-        }
+        $acl = AclQuery::create()->findOneByCode($customerGroupAcl->attributes('aclcode'));
 
         if (null === $acl) {
             throw new \Exception(
                 $this->translator->trans(
                     "Error in %a file the acl '%s' doesn't exist",
-                    ['%a' => $this->xmlFilePath, '%s' => $customerGroupAcl->getAttributeAsPhp('aclcode')],
+                    ['%a' => $this->xmlFilePath, '%s' => $customerGroupAcl->attributes('aclcode')],
                     CustomerGroupAcl::DOMAIN_MESSAGE
                 )
             );
@@ -253,11 +249,12 @@ class AclXmlFileloader
      * Browse access and add them if not already existing
      *
      * @param $accesses * An array of all the access in the customergroupacl who is actually parsed
-     * @param Acl $acl Acl propel object for what the access have to be created
-     * @param CustomerGroup $customerGroup CustomerGroup propel object for who the access have to be created
+     * @param Acl $acl Acl propel object for what the access has to be created
+     * @param CustomerGroup $customerGroup CustomerGroup propel an object for who the access have to be created
      *
+     * @throws PropelException
      */
-    protected function parseAccesses($accesses, Acl $acl, CustomerGroup $customerGroup)
+    protected function parseAccesses($accesses, Acl $acl, CustomerGroup $customerGroup): void
     {
         /** @var SimpleXMLElement $access */
         foreach ($accesses as $access) {
@@ -265,7 +262,7 @@ class AclXmlFileloader
                 return;
             }
 
-            if ("ALL" === $access->getAttributeAsPhp('right')) {
+            if ("ALL" === $access->attributes('right')) {
                 //Add all access if not already exists
                 foreach ($this->accessPows as $right) {
                     $customerGroupAcl = CustomerGroupAclQuery::create()
@@ -288,7 +285,7 @@ class AclXmlFileloader
             $customerGroupAcl = CustomerGroupAclQuery::create()
                 ->filterByAcl($acl)
                 ->filterByCustomerGroup($customerGroup)
-                ->filterByType($this->accessPows[$access->getAttributeAsPhp('right')])
+                ->filterByType($this->accessPows[$access->attributes('right')])
                 ->findOneOrCreate();
 
             if (0 !== $customerGroupAcl->getActivate()) {
@@ -301,15 +298,15 @@ class AclXmlFileloader
 
 
     /**
-     * Parses a XML file.
+     * Parses an XML file.
      *
      * @param string $file Path to a file
      *
      * @return SimpleXMLElement
      *
-     * @throws \Exception When loading of XML file returns error
+     * @throws \Exception When loading of an XML file returns an error
      */
-    protected function parseFile($file)
+    protected function parseFile(string $file): SimpleXMLElement
     {
         try {
             $dom = XmlUtils::loadFile($file, [$this, 'validateSchema']);

@@ -2,7 +2,7 @@
 
 namespace CustomerGroupAcl\EventListener;
 
-use CustomerGroupAcl\ACL\AclXmlFileloader;
+use CustomerGroupAcl\ACL\AclXmlFileLoader;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Thelia\Core\Event\Module\ModuleToggleActivationEvent;
 use Thelia\Core\Event\TheliaEvents;
@@ -16,34 +16,36 @@ class ModuleListener implements EventSubscriberInterface
 {
     /**
      * ACL configuration file loader.
-     * @var AclXmlFileloader
      */
-    protected $aclXmlFileloader;
+    protected AclXmlFileLoader $aclXmlFileLoader;
 
-    public function __construct(AclXmlFileloader $aclXmlFileloader)
+    public function __construct(AclXmlFileLoader $aclXmlFileLoader)
     {
-        $this->aclXmlFileloader = $aclXmlFileloader;
+        $this->aclXmlFileLoader = $aclXmlFileLoader;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             TheliaEvents::MODULE_TOGGLE_ACTIVATION => ['manageAcl', 160]
         ];
     }
 
-    public function manageAcl(ModuleToggleActivationEvent $event)
+    /**
+     * @throws \Exception
+     */
+    public function manageAcl(ModuleToggleActivationEvent $event): void
     {
         if (null === $module = ModuleQuery::create()->findPk($event->getModuleId())) {
             return;
         }
 
-        //In case of deactivation do nothing
+        //In case of deactivation, do nothing
         if ($module->getActivate() == BaseModule::IS_ACTIVATED) {
             return;
         }
 
         //In case of activation update acls
-        $this->aclXmlFileloader->load($module);
+        $this->aclXmlFileLoader->load($module);
     }
 }

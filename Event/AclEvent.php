@@ -9,20 +9,14 @@ use Thelia\Core\Event\ActionEvent;
  */
 class AclEvent extends ActionEvent
 {
-    /** @var int */
-    protected $id;
-    /** @var int */
-    protected $module_id;
-    /** @var string */
-    protected $code;
-    /** @var string */
-    protected $locale;
-    /** @var string */
-    protected $title;
-    /** @var string */
-    protected $description;
+    protected string $code;
+    protected int $module_id;
+    protected string|null $locale;
+    protected string|null $title;
+    protected string|null $description;
+    protected int|null $id;
 
-    public function __construct($code, $module_id, $locale = null, $title = null, $description = null, $id = null)
+    public function __construct(string $code, int $module_id, string $locale = null, string $title = null, string $description = null, int $id = null)
     {
         $this->code = $code;
         $this->module_id = $module_id;
@@ -35,31 +29,25 @@ class AclEvent extends ActionEvent
     /**
      * @param string $code
      */
-    public function setCode($code)
+    public function setCode(string $code): void
     {
         $this->code = $code;
     }
 
-    /**
-     * @return string
-     */
-    public function getCode()
+    public function getCode(): string
     {
         return $this->code;
     }
 
-    /**
-     * @param string $description
-     */
-    public function setDescription($description)
+    public function setDescription(string $description): void
     {
         $this->description = $description;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getDescription()
+    public function getDescription(): ?string
     {
         return $this->description;
     }
@@ -67,15 +55,15 @@ class AclEvent extends ActionEvent
     /**
      * @param int $id
      */
-    public function setId($id)
+    public function setId(int $id): void
     {
         $this->id = $id;
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -83,15 +71,15 @@ class AclEvent extends ActionEvent
     /**
      * @param string $locale
      */
-    public function setLocale($locale)
+    public function setLocale(string $locale): void
     {
         $this->locale = $locale;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getLocale()
+    public function getLocale(): ?string
     {
         return $this->locale;
     }
@@ -99,7 +87,7 @@ class AclEvent extends ActionEvent
     /**
      * @param int $module_id
      */
-    public function setModuleId($module_id)
+    public function setModuleId(int $module_id): void
     {
         $this->module_id = $module_id;
     }
@@ -107,7 +95,7 @@ class AclEvent extends ActionEvent
     /**
      * @return int
      */
-    public function getModuleId()
+    public function getModuleId(): int
     {
         return $this->module_id;
     }
@@ -115,15 +103,15 @@ class AclEvent extends ActionEvent
     /**
      * @param string $title
      */
-    public function setTitle($title)
+    public function setTitle(string $title): void
     {
         $this->title = $title;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getTitle()
+    public function getTitle(): ?string
     {
         return $this->title;
     }

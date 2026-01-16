@@ -7,16 +7,22 @@ use CustomerGroupAcl\Event\AclEvent;
 use CustomerGroupAcl\Event\CustomerGroupAclEvent;
 use CustomerGroupAcl\Event\CustomerGroupAclEvents;
 use CustomerGroupAcl\Form\AclForm;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\Security\AccessManager;
 use Thelia\Core\Security\Resource\AdminResources;
+use Thelia\Core\Template\ParserContext;
 
 /**
  * Controller for the administration of ACLs.
  */
 class CustomerGroupAclAdminController extends BaseAdminController
 {
-    public function aclUpdateAction()
+    public function __construct(protected EventDispatcherInterface $eventDispatcher)
+    {
+    }
+
+    public function aclUpdateAction(ParserContext $parserContext)
     {
         if (null !== $response =
                 $this->checkAuth(AdminResources::MODULE, 'CustomerGroupAcl', AccessManager::CREATE)
@@ -24,29 +30,40 @@ class CustomerGroupAclAdminController extends BaseAdminController
             return $response;
         }
 
-        $form = new AclForm($this->getRequest());
+        $form = $this->createForm(AclForm::getName());
 
-        // TODO: catch possible exception
-        $formValidate = $this->validateForm($form);
+        try {
+            $formValidate = $this->validateForm($form);
 
-        $event = new AclEvent(
-            $formValidate->get('code')->getData(),
-            $formValidate->get('module_id')->getData(),
-            $formValidate->get('locale')->getData(),
-            $formValidate->get('title')->getData(),
-            $formValidate->get('description')->getData(),
-            ($formValidate->get('id')->getData() != null) ? $formValidate->get('id')->getData() : null
-        );
+            $event = new AclEvent(
+                $formValidate->get('code')->getData(),
+                $formValidate->get('module_id')->getData(),
+                $formValidate->get('locale')->getData(),
+                $formValidate->get('title')->getData(),
+                $formValidate->get('description')->getData(),
+                ($formValidate->get('id')->getData() != null) ? $formValidate->get('id')->getData() : null
+            );
 
-        $this->dispatch(CustomerGroupAclEvents::ACL_UPDATE, $event);
+            $this->eventDispatcher->dispatch($event, CustomerGroupAclEvents::ACL_UPDATE);
 
-        return $this->generateRedirectFromRoute(
-            'admin.module.configure',
-            [],
-            [
-                'module_code' => CustomerGroupAcl::getModuleCode(),
-            ]
-        );
+            return $this->generateRedirectFromRoute(
+                'admin.module.configure',
+                [],
+                [
+                    'module_code' => CustomerGroupAcl::getModuleCode(),
+                ]
+            );
+        } catch (\Exception $e) {
+            $error_message = $e->getMessage();
+        }
+
+        $form->setErrorMessage($error_message);
+
+        $parserContext
+            ->addForm($form)
+            ->setGeneralError($error_message);
+
+        return $this->generateErrorRedirect($form);
     }
 
     public function toggleActivationAction($acl_id, $customer_group_id, $type)
@@ -64,6 +81,6 @@ class CustomerGroupAclAdminController extends BaseAdminController
         );
 
         // TODO: catch possible exception
-        $this->dispatch(CustomerGroupAclEvents::CUSTOMER_GROUP_ACL_UPDATE, $event);
+        $this->eventDispatcher->dispatch($event,CustomerGroupAclEvents::CUSTOMER_GROUP_ACL_UPDATE);
     }
 }

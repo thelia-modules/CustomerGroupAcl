@@ -9,16 +9,12 @@ use Thelia\Core\Event\ActionEvent;
  */
 class CustomerGroupAclEvent extends ActionEvent
 {
-    /** @var int */
-    protected $acl_id;
-    /** @var int */
-    protected $customer_group_id;
-    /** @var int */
-    protected $type;
-    /** @var boolean */
-    protected $activate;
+    protected int $acl_id;
+    protected int $customer_group_id;
+    protected int $type;
+    protected bool $activate;
 
-    public function __construct($acl_id, $customer_group_id, $type)
+    public function __construct(int $acl_id, int $customer_group_id, int $type)
     {
         $this->acl_id = $acl_id;
         $this->customer_group_id = $customer_group_id;
@@ -28,7 +24,7 @@ class CustomerGroupAclEvent extends ActionEvent
     /**
      * @param int $acl_id
      */
-    public function setAclId($acl_id)
+    public function setAclId(int $acl_id): void
     {
         $this->acl_id = $acl_id;
     }
@@ -36,7 +32,7 @@ class CustomerGroupAclEvent extends ActionEvent
     /**
      * @return int
      */
-    public function getAclId()
+    public function getAclId(): int
     {
         return $this->acl_id;
     }
@@ -44,7 +40,7 @@ class CustomerGroupAclEvent extends ActionEvent
     /**
      * @param boolean $activate
      */
-    public function setActivate($activate)
+    public function setActivate(bool $activate): void
     {
         $this->activate = $activate;
     }
@@ -52,7 +48,7 @@ class CustomerGroupAclEvent extends ActionEvent
     /**
      * @return boolean
      */
-    public function getActivate()
+    public function getActivate(): bool
     {
         return $this->activate;
     }
@@ -60,7 +56,7 @@ class CustomerGroupAclEvent extends ActionEvent
     /**
      * @param int $customer_group_id
      */
-    public function setCustomerGroupId($customer_group_id)
+    public function setCustomerGroupId(int $customer_group_id): void
     {
         $this->customer_group_id = $customer_group_id;
     }
@@ -68,7 +64,7 @@ class CustomerGroupAclEvent extends ActionEvent
     /**
      * @return int
      */
-    public function getCustomerGroupId()
+    public function getCustomerGroupId(): int
     {
         return $this->customer_group_id;
     }
@@ -76,7 +72,7 @@ class CustomerGroupAclEvent extends ActionEvent
     /**
      * @param int $type
      */
-    public function setType($type)
+    public function setType(int $type): void
     {
         $this->type = $type;
     }
@@ -84,7 +80,7 @@ class CustomerGroupAclEvent extends ActionEvent
     /**
      * @return int
      */
-    public function getType()
+    public function getType(): int
     {
         return $this->type;
     }

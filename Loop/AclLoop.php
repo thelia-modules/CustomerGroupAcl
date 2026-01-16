@@ -5,6 +5,7 @@ namespace CustomerGroupAcl\Loop;
 use CustomerGroupAcl\Model\Acl;
 use CustomerGroupAcl\Model\AclQuery;
 use Propel\Runtime\ActiveQuery\Criteria;
+use Propel\Runtime\Exception\PropelException;
 use Thelia\Core\Template\Element\BaseI18nLoop;
 use Thelia\Core\Template\Element\LoopResult;
 use Thelia\Core\Template\Element\LoopResultRow;
@@ -19,7 +20,7 @@ use Thelia\Type\TypeCollection;
  */
 class AclLoop extends BaseI18nLoop implements PropelSearchLoopInterface
 {
-    protected function getArgDefinitions()
+    protected function getArgDefinitions(): ArgumentCollection
     {
         return new ArgumentCollection(
             Argument::createIntListTypeArgument('id'),
@@ -42,7 +43,7 @@ class AclLoop extends BaseI18nLoop implements PropelSearchLoopInterface
         );
     }
 
-    public function buildModelCriteria()
+    public function buildModelCriteria(): AclQuery
     {
         $search = new AclQuery();
 
@@ -89,7 +90,10 @@ class AclLoop extends BaseI18nLoop implements PropelSearchLoopInterface
         return $search;
     }
 
-    public function parseResults(LoopResult $loopResult)
+    /**
+     * @throws PropelException
+     */
+    public function parseResults(LoopResult $loopResult): LoopResult
     {
         /** @var Acl $acl */
         foreach ($loopResult->getResultDataCollection() as $acl) {

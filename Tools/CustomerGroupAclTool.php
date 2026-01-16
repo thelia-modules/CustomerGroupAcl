@@ -8,6 +8,7 @@ use CustomerGroupAcl\Event\CustomerGroupAclEvents;
 use CustomerGroupAcl\Manager\CustomerGroupAclAccessManager;
 use CustomerGroupAcl\Model\Base\AclQuery;
 use CustomerGroupAcl\Model\CustomerGroupAclQuery;
+use Exception;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -22,41 +23,34 @@ use Thelia\Core\HttpFoundation\Session\Session;
  */
 class CustomerGroupAclTool
 {
-    /** @var Request */
-    protected $request;
-    /** @var EventDispatcherInterface  */
-    protected $dispatcher;
 
     /**
      * Cache for ACL checking results: parameters hash => result.
      * @var array
      */
-    protected $runtimeCache = [];
+    protected array $runtimeCache = [];
 
     /**
      * @param Request $request
      * @param EventDispatcherInterface $dispatcher
      */
-    public function __construct(Request $request, EventDispatcherInterface $dispatcher)
+    public function __construct(protected Request $request, protected EventDispatcherInterface $dispatcher)
     {
-        $this->request = $request;
-        $this->dispatcher = $dispatcher;
     }
 
     /**
      * Check if the current user is granted access to a ressource.
      * Also performs runtime cache management.
      *
-     * @param string|array $resources     Resource name or resources list.
-     * @param string|array $accesses      Access name or accesses list.
-     * @param boolean      $accessOr      Whether to return true if at least one resource/access couple is granted.
-     * @param null|int     $entityId
-     * @param bool         $dispatchEvent If CheckAclEvent must be dispatch
+     * @param array|string $resources     Resource name or resources list.
+     * @param array|string $accesses      Access name or accesses list.
+     * @param boolean $accessOr      Whether to return true if at least one resource/access couple is granted.
+     * @param int|null $entityId
      *
      * @return bool Whether access is granted.
-     * @throws \Exception
+     * @throws Exception
      */
-    public function checkAcl($resources, $accesses, $accessOr = false, $entityId = null)
+    public function checkAcl(array|string $resources, array|string $accesses, bool $accessOr = false, int $entityId = null): bool
     {
         if (!is_array($resources)) {
             $resources = (array)$resources;
@@ -76,14 +70,14 @@ class CustomerGroupAclTool
         if( !$this->runtimeCache[$runtimeCacheKey] ) return false;
 
         if( isset($entityId) && count($resources) > 1 ){
-            throw new \Exception(
+            throw new Exception(
                 "Verification of ACLs cannot run over several resources if an entity ID is specified",
                 "500"
             );
         }
 
         $resource = AclQuery::create()->findOneByCode($resources[0]);
-        $className = isset($resource) ? $resource->getEntityClass() : null;
+        $className = $resource?->getEntityClass();
         $event = new CheckAclEvent();
         $event
             ->setResource($resources[0])
@@ -93,21 +87,21 @@ class CustomerGroupAclTool
             ->setClassNames($className)
         ;
         $eventName = CustomerGroupAclEvents::CHECK_ACL."_".$resources[0];
-        $this->dispatcher->dispatch($eventName, $event);
+        $this->dispatcher->dispatch($event, $eventName);
 
         return $event->getResult();
     }
 
     /**
-     * Check if the current user is granted access to a ressource.
+     * Check if the current user is granted access to a resource.
      *
-     * @param string|array $resources Resource name or resources list.
-     * @param string|array $accesses  Access name or accesses list.
-     * @param boolean      $accessOr  Whether to return true if at least one resource/access couple is granted.
+     * @param array|string $resources Resource name or resources list.
+     * @param array|string $accesses  Access name or accesses list.
+     * @param boolean $accessOr  Whether to return true if at least one resource/access couple is granted.
      *
      * @return boolean Whether access is granted.
      */
-    protected function performCheck($resources, $accesses, $accessOr = false)
+    protected function performCheck(array|string $resources, array|string $accesses, bool $accessOr = false): bool
     {
         /** @var Session $session */
         $session = $this->request->getSession();
