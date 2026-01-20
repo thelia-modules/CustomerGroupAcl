@@ -4,6 +4,8 @@ namespace CustomerGroupAcl\Smarty;
 
 use CustomerGroupAcl\Manager\CustomerGroupAclAccessManager;
 use CustomerGroupAcl\Tools\CustomerGroupAclTool;
+use Exception;
+use Smarty_Internal_Template;
 use Thelia\Core\HttpFoundation\Request;
 use Thelia\Core\Security\Exception\AuthenticationException;
 use TheliaSmarty\Template\AbstractSmartyPlugin;
@@ -18,17 +20,15 @@ use TheliaSmarty\Template\SmartyPluginDescriptor;
  */
 class CustomerGroupAclSmarty extends AbstractSmartyPlugin
 {
-    /** @var Request */
-    protected $request;
+    protected Request $request;
 
-    /** @var CustomerGroupAclTool */
-    protected $customerGroupAclTool;
+    protected CustomerGroupAclTool $customerGroupAclTool;
 
     /**
      * List named acl Smarty block
      * @var array
      */
-    protected $rel;
+    protected array $rel;
 
     /**
      * Class constructor
@@ -43,7 +43,7 @@ class CustomerGroupAclSmarty extends AbstractSmartyPlugin
         $this->rel = [];
     }
 
-    public function getPluginDescriptors()
+    public function getPluginDescriptors(): array
     {
         return [
             new SmartyPluginDescriptor('function', 'get_access_pows', $this, 'getAccessPows'),
@@ -54,14 +54,14 @@ class CustomerGroupAclSmarty extends AbstractSmartyPlugin
     }
 
     /**
-     * Get pows (but I don't know what is call pows)
+     * Get pows (but I don't know what call pows is)
      *
-     * @param array                      $params   Parameters
-     * @param \Smarty_Internal_Template  $template Smarty template
+     * @param array $params   Parameters
+     * @param Smarty_Internal_Template|null $template Smarty template
      *
-     * @return array
+     * @return void
      */
-    public function getAccessPows($params, $template = null)
+    public function getAccessPows(array $params, Smarty_Internal_Template $template = null): void
     {
         $template->assign($params['load_access_pows'], CustomerGroupAclAccessManager::getAccessPows());
     }
@@ -69,14 +69,15 @@ class CustomerGroupAclSmarty extends AbstractSmartyPlugin
     /**
      * Handler check_acl smarty function
      *
-     * @param array                      $params   Parameters
-     * @param \Smarty_Internal_Template  $template Smarty template
-     *
-     * @throws \Thelia\Core\Security\Exception\AuthenticationException
+     * @param array $params Parameters
+     * @param Smarty_Internal_Template $template Smarty template
      *
      * @return null
+     * @throws AuthenticationException|SmartyPluginException
+     * @throws Exception
+     *
      */
-    public function checkAclPage($params, $template)
+    public function checkAclPage(array $params, Smarty_Internal_Template $template): null
     {
         list($codes, $accesses, $accessOr, $entityId) = $this->checkParameters($params);
 
@@ -97,16 +98,17 @@ class CustomerGroupAclSmarty extends AbstractSmartyPlugin
     /**
      * Handle acl smarty block structure
      *
-     * @param array                     $params   Parameters
-     * @param string                    $content  Block content
-     * @param \Smarty_Internal_Template $template Smarty template
-     * @param boolean                   $repeat   Block repeat
-     *
-     * @throws \TheliaSmarty\Template\Exception\SmartyPluginException
+     * @param array $params Parameters
+     * @param string $content Block content
+     * @param Smarty_Internal_Template $template Smarty template
+     * @param boolean $repeat Block repeat
      *
      * @return null|string
+     * @throws SmartyPluginException
+     * @throws Exception
+     *
      */
-    public function checkAclBlock(array $params, $content, $template, &$repeat)
+    public function checkAclBlock(array $params, string $content, Smarty_Internal_Template $template, bool &$repeat): ?string
     {
         if ($content === null) {
             list($codes, $accesses, $accessOr, $entityId, $name) = $this->checkParameters($params);
@@ -134,15 +136,15 @@ class CustomerGroupAclSmarty extends AbstractSmartyPlugin
      * Handle elseacl smarty block structure
      *
      * @param array                     $params
-     * @param string                    $content
-     * @param \Smarty_Internal_Template $template
-     * @param boolean                   $repeat
-     *
-     * @throws \TheliaSmarty\Template\Exception\SmartyPluginException
+     * @param string $content
+     * @param Smarty_Internal_Template $template
+     * @param boolean $repeat
      *
      * @return null|string
+     * @throws SmartyPluginException
+     *
      */
-    public function elseAclBlock(array $params, $content, $template, &$repeat)
+    public function elseAclBlock(array $params, string $content, Smarty_Internal_Template $template, bool &$repeat): ?string
     {
         $rel = $this->getNormalizedParam($params, 'rel');
 
@@ -165,11 +167,11 @@ class CustomerGroupAclSmarty extends AbstractSmartyPlugin
      *
      * @param array $params
      *
-     * @throws \TheliaSmarty\Template\Exception\SmartyPluginException
-     *
      * @return array
+     * @throws SmartyPluginException
+     *
      */
-    protected function checkParameters(array $params)
+    protected function checkParameters(array $params): array
     {
         $codes = $this->getParam($params, 'code');
         $accesses = $this->getNormalizedParam($params, 'access');

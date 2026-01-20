@@ -18,7 +18,7 @@ class CustomerGroupAclAccessManager extends AccessManager
      * @param string $code ACL code.
      * @return Acl
      */
-    public static function getAclByCode($code)
+    public static function getAclByCode($code): Acl
     {
         return AclQuery::create()->findOneByCode($code);
     }
@@ -26,9 +26,9 @@ class CustomerGroupAclAccessManager extends AccessManager
     /**
      * Get the code for an access type
      * @param string $key The access type.
-     * @return int Numeric code for the type.
+     * @return int|null Numeric code for the type.
      */
-    public static function getAccessPowsValue($key)
+    public static function getAccessPowsValue($key): ?int
     {
         if (array_key_exists($key, self::$accessPows)) {
             return self::$accessPows[$key];
@@ -40,7 +40,7 @@ class CustomerGroupAclAccessManager extends AccessManager
     /**
      * @return array A map of the possible ACL access type => access type numeric code.
      */
-    public static function getAccessPows()
+    public static function getAccessPows(): array
     {
         return self::$accessPows;
     }

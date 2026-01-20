@@ -4,6 +4,9 @@ namespace CustomerGroupAcl\Form;
 
 use CustomerGroupAcl\CustomerGroupAcl;
 use Propel\Runtime\ActiveQuery\Criteria;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Thelia\Core\Translation\Translator;
 use Thelia\Form\BaseForm;
@@ -14,12 +17,12 @@ use Thelia\Model\ModuleQuery;
  */
 class AclForm extends BaseForm
 {
-    public function getName()
+    public static function getName(): string
     {
         return 'acl_form';
     }
 
-    protected function buildForm()
+    protected function buildForm(): void
     {
         $activeModules = ModuleQuery::create()
             ->filterByActivate(1)
@@ -29,7 +32,7 @@ class AclForm extends BaseForm
         $this->formBuilder
             ->add(
                 'id',
-                'integer',
+                IntegerType::class,
                 [
                     'label' => '',
                     'label_attr' => [
@@ -40,9 +43,9 @@ class AclForm extends BaseForm
             )
             ->add(
                 'module_id',
-                'choice',
+                ChoiceType::class,
                 [
-                    'choices' => $activeModules->toKeyValue('id', 'code'),
+                    'choices' => $activeModules->toKeyValue('code', 'id'),
                     'label' => Translator::getInstance()->trans(
                         'Concerned module',
                         [],
@@ -56,7 +59,7 @@ class AclForm extends BaseForm
             )
             ->add(
                 'code',
-                'text',
+                TextType::class,
                 [
                     'label' => Translator::getInstance()->trans(
                         'Code',
@@ -74,7 +77,7 @@ class AclForm extends BaseForm
             )
             ->add(
                 'locale',
-                'text',
+                TextType::class,
                 [
                     'label' => '',
                     'label_attr' => [
@@ -88,7 +91,7 @@ class AclForm extends BaseForm
             )
             ->add(
                 'title',
-                'text',
+                TextType::class,
                 [
                     'label' => Translator::getInstance()->trans(
                         'Title',
@@ -106,7 +109,7 @@ class AclForm extends BaseForm
             )
             ->add(
                 'description',
-                'text',
+                TextType::class,
                 [
                     'label' => Translator::getInstance()->trans(
                         'Description',

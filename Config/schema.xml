@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<database defaultIdMethod="native" name="thelia">
+<database defaultIdMethod="native" name="TheliaMain">
 
     <table name="acl" namespace="CustomerGroupAcl\Model">
         <column name="module_id" required="true" type="INTEGER" />

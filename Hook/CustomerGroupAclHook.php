@@ -16,7 +16,7 @@ class CustomerGroupAclHook extends BaseHook
      * Insert a link to the ACL configuration page in the tool menu.
      * @param HookRenderBlockEvent $event Render event.
      */
-    public function customerGroupAclHookTool(HookRenderBlockEvent $event)
+    public function customerGroupAclHookTool(HookRenderBlockEvent $event): void
     {
         $event->add([
             "url" => URL::getInstance()->absoluteUrl("/admin/module/CustomerGroupAcl"),

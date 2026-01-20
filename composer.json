@@ -8,6 +8,8 @@
     "minimum-stability": "dev",
     "require": {
         "thelia/installer": "~1.0",
-        "thelia/customer-group-module": "~0.1"
+        "thelia/customer-group-module": "~0.2",
+        "ext-simplexml": "*",
+        "ext-dom": "*"
     }
 }

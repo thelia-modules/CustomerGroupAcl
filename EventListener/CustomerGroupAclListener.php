@@ -14,7 +14,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class CustomerGroupAclListener implements EventSubscriberInterface
 {
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
               CustomerGroupAclEvents::CUSTOMER_GROUP_ACL_UPDATE => ["customerGroupAclUpdate", 128],
@@ -30,7 +30,7 @@ class CustomerGroupAclListener implements EventSubscriberInterface
      *
      * @todo Clarify what this should be doing.
      */
-    public function customerGroupAclUpdate(CustomerGroupAclEvent $event)
+    public function customerGroupAclUpdate(CustomerGroupAclEvent $event): void
     {
         $customerGroupAcl = CustomerGroupAclQuery::create()
             ->filterByAclId($event->getAclId())

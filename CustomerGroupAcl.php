@@ -2,10 +2,11 @@
 
 namespace CustomerGroupAcl;
 
-use CustomerGroupAcl\ACL\AclXmlFileloader;
+use CustomerGroupAcl\ACL\AclXmlFileLoader;
 use CustomerGroupAcl\Model\AclQuery;
 use CustomerGroupAcl\Model\CustomerGroupAclQuery;
 use Propel\Runtime\Connection\ConnectionInterface;
+use Symfony\Component\DependencyInjection\Loader\Configurator\ServicesConfigurator;
 use Thelia\Core\Translation\Translator;
 use Thelia\Install\Database;
 use Thelia\Model\Module;
@@ -16,36 +17,40 @@ class CustomerGroupAcl extends BaseModule
 {
     const DOMAIN_MESSAGE = "customergroupacl";
 
-    public function preActivation(ConnectionInterface $con = null)
+    /**
+     * @throws \Exception
+     */
+    public function postActivation(ConnectionInterface $con = null): void
     {
-        try {
-            // Try find Acl DB Model
-            AclQuery::create()->findOne();
-            CustomerGroupAclQuery::create()->findOne();
-        } catch (\Exception $e) {
+        parent::postActivation($con);
+
+        if (!self::getConfigValue('is_initialized',null)){
             $database = new Database($con);
-            $database->insertSql(null, [__DIR__ . DS . 'Config' . DS . 'thelia.sql']);
+            $database->insertSql(null, [__DIR__ . "/Config/TheliaMain.sql"]);
+            self::setConfigValue('is_initialized', 1);
         }
 
-        return true;
-    }
-
-    public function postActivation(ConnectionInterface $con = null)
-    {
-        $aclXmlFileloader = new AclXmlFileloader(Translator::getInstance());
+        $aclXmlFileLoader = new AclXmlFileLoader(Translator::getInstance());
 
         $modules = ModuleQuery::create()->findByActivate(BaseModule::IS_ACTIVATED);
         /** @var Module $module */
         foreach ($modules as $module) {
-            $aclXmlFileloader->load($module);
+            $aclXmlFileLoader->load($module);
         }
     }
 
     /**
      * @return Module This module.
      */
-    public static function getModule()
+    public static function getModule(): Module
     {
         return ModuleQuery::create()->findOneByCode(static::getModuleCode());
+    }
+
+    public static function configureServices(ServicesConfigurator $servicesConfigurator): void {
+        $servicesConfigurator->load(self::getModuleCode().'\\', __DIR__)
+            ->exclude([THELIA_MODULE_DIR . ucfirst(self::getModuleCode()). "/I18n/*"])
+            ->autowire(true)
+            ->autoconfigure(true);
     }
 }

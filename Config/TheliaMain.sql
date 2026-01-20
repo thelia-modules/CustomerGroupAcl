@@ -19,8 +19,8 @@ CREATE TABLE `acl`
     `updated_at` DATETIME,
     PRIMARY KEY (`id`),
     UNIQUE INDEX `code_UNIQUE` (`code`),
-    INDEX `acl_FI_1` (`module_id`),
-    CONSTRAINT `acl_FK_1`
+    INDEX `acl_fi_2c6483` (`module_id`),
+    CONSTRAINT `acl_fk_2c6483`
         FOREIGN KEY (`module_id`)
         REFERENCES `module` (`id`)
         ON DELETE CASCADE
@@ -42,12 +42,12 @@ CREATE TABLE `customer_group_acl`
     `updated_at` DATETIME,
     PRIMARY KEY (`acl_id`,`customer_group_id`,`type`),
     INDEX `idx_acl_activate` (`activate`),
-    INDEX `customer_group_acl_FI_2` (`customer_group_id`),
-    CONSTRAINT `customer_group_acl_FK_1`
+    INDEX `customer_group_acl_fi_2f1c4f` (`customer_group_id`),
+    CONSTRAINT `customer_group_acl_fk_28370f`
         FOREIGN KEY (`acl_id`)
         REFERENCES `acl` (`id`)
         ON DELETE CASCADE,
-    CONSTRAINT `customer_group_acl_FK_2`
+    CONSTRAINT `customer_group_acl_fk_2f1c4f`
         FOREIGN KEY (`customer_group_id`)
         REFERENCES `customer_group` (`id`)
         ON DELETE CASCADE
@@ -66,7 +66,7 @@ CREATE TABLE `acl_i18n`
     `title` VARCHAR(255) NOT NULL,
     `description` VARCHAR(255),
     PRIMARY KEY (`id`,`locale`),
-    CONSTRAINT `acl_i18n_FK_1`
+    CONSTRAINT `acl_i18n_fk_157310`
         FOREIGN KEY (`id`)
         REFERENCES `acl` (`id`)
         ON DELETE CASCADE

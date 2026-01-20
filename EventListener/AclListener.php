@@ -14,7 +14,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class AclListener implements EventSubscriberInterface
 {
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             CustomerGroupAclEvents::ACL_UPDATE => ["aclUpdate", 128]
@@ -28,9 +28,9 @@ class AclListener implements EventSubscriberInterface
      *
      * @throws PropelException
      */
-    public function aclUpdate(AclEvent $event)
+    public function aclUpdate(AclEvent $event): void
     {
-        // create the ACL if it does not exists
+        // create the ACL if it does not exist
         if (null == $acl = AclQuery::create()->findPk($event->getId())) {
             $acl = new Acl();
         }
