@@ -15,7 +15,7 @@ use Thelia\Module\BaseModule;
 
 class CustomerGroupAcl extends BaseModule
 {
-    const string DOMAIN_MESSAGE = "customergroupacl";
+    const DOMAIN_MESSAGE = "customergroupacl";
 
     /**
      * @throws \Exception

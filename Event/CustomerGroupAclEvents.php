@@ -7,7 +7,7 @@ namespace CustomerGroupAcl\Event;
  */
 class CustomerGroupAclEvents
 {
-    const string ACL_UPDATE = "action.admin.acl.update";
-    const string CUSTOMER_GROUP_ACL_UPDATE = "action.admin.customer.group.acl.update";
-    const string CHECK_ACL = "action.check.acl";
+    const ACL_UPDATE = "action.admin.acl.update";
+    const CUSTOMER_GROUP_ACL_UPDATE = "action.admin.customer.group.acl.update";
+    const CHECK_ACL = "action.check.acl";
 }
